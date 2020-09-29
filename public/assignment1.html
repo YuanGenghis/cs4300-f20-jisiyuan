@@ -12,12 +12,17 @@
     /* 2. Create and compile a vertex and frame shader program */
     const vertexShaderCode =
         'attribute vec2 coordinates;' +
-        'void main(void) {' + ' gl_Position = vec4(coordinates, 0.0, 1.0);' + '}';
+        'void main(void) {' +
+        ' gl_Position = vec4(coordinates, 0.0, 1.0);' +
+        '}';
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(vertexShader, vertexShaderCode);
     gl.compileShader(vertexShader);
 
-    const fragmentShaderCode = 'void main(void) {' + 'gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);'+'}';
+    const fragmentShaderCode =
+        'void main(void) {' +
+        'gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);' +
+        '}';
     const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     gl.shaderSource(fragmentShader, fragmentShaderCode);
     gl.compileShader(fragmentShader);
