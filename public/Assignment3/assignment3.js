@@ -34,6 +34,7 @@ let shapes = [
     }
 ]
 
+
 const addTriangle = (center) => {
     let x = parseInt(document.getElementById("x").value)
     let y = parseInt(document.getElementById("y").value)
