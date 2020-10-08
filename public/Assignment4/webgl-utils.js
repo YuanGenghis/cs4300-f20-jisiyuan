@@ -15,8 +15,14 @@ const webglUtils = {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
     },
+    // rgbToHex: (rgb) => {
+    //     return `#${webglUtils.componentToHex(rgb.red * 256)}${webglUtils.componentToHex(rgb.green * 256)}${webglUtils.componentToHex(rgb.blue * 256)}`
+    // },
     rgbToHex: (rgb) => {
-        return `#${webglUtils.componentToHex(rgb.red * 256)}${webglUtils.componentToHex(rgb.green * 256)}${webglUtils.componentToHex(rgb.blue * 256)}`
+        const redHex = webglUtils.componentToHex(rgb.red * 256)
+        const greenHex = webglUtils.componentToHex(rgb.green * 256)
+        const blueHex = webglUtils.componentToHex(rgb.blue * 256)
+        return `#${redHex}${greenHex}${blueHex}`
     },
     createProgramFromScripts: (gl, vertexShaderElementId, fragmentShaderElementId) => {
         // Get the strings for our GLSL shaders

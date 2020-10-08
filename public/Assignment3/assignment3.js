@@ -1,8 +1,23 @@
+const doMouseDown = (event) => {
+    const boundingRectangle = canvas.getBoundingClientRect();
+    const x = event.clientX - boundingRectangle.left;
+    const y = event.clientY - boundingRectangle.top;
+    const center = {position: {x, y}}
+    const shape = document.querySelector("input[name='shape']:checked").value
+
+    if (shape === "rectangle") {
+        addRectangle(center)
+    } else if (shape === "triangle") {
+        addTriangle(center)
+    }
+}
+
 const RED_HEX = "#FF0000"
 const RED_RGB = webglUtils.hexToRgb(RED_HEX)
+const BLUE_HEX = "#0000FF"
+const BLUE_RGB = webglUtils.hexToRgb(BLUE_HEX)
 const RECTANGLE = "RECTANGLE"
 const TRIANGLE = "TRIANGLE"
-
 let shapes = [
     {
         type: RECTANGLE,
@@ -15,9 +30,9 @@ let shapes = [
             height: 50
         },
         color: {
-            red: Math.random(),
-            green: Math.random(),
-            blue: Math.random()
+            red: BLUE_RGB.red,
+            green: BLUE_RGB.green,
+            blue: BLUE_RGB.blue
         }
     },
     {
@@ -30,10 +45,43 @@ let shapes = [
             width: 50,
             height: 50
         },
-        color: RED_RGB
+        color: {
+            red: RED_RGB.red,
+            green: RED_RGB.blue,
+            blue: RED_RGB.green
+        }
     }
 ]
 
+const addRectangle = (rectangle) => {
+    let x = parseInt(document.getElementById("x").value)
+    let y = parseInt(document.getElementById("y").value)
+    const width = parseInt(document.getElementById("width").value)
+    const height = parseInt(document.getElementById("height").value)
+    const colorHex = document.getElementById("color").value
+    const colorRgb = webglUtils.hexToRgb(colorHex)
+
+    if (rectangle) {
+        x = rectangle.position.x
+        y = rectangle.position.y
+    }
+
+    rectangle = {
+        type: RECTANGLE,
+        position: {
+            "x": x,
+            y: y
+        },
+        dimensions: {
+            width,
+            height
+        },
+        color: colorRgb
+    }
+
+    shapes.push(rectangle)
+    render()
+}
 
 const addTriangle = (center) => {
     let x = parseInt(document.getElementById("x").value)
@@ -46,7 +94,7 @@ const addTriangle = (center) => {
         x = center.position.x
         y = center.position.y
     }
-    const triangle = {
+    triangle = {
         type: TRIANGLE,
         position: {x, y},
         dimensions: {width, height},
@@ -56,76 +104,20 @@ const addTriangle = (center) => {
     render()
 }
 
-const addRectangle = (center) => {
-    let x = parseInt(document.getElementById("x").value)
-    let y = parseInt(document.getElementById("y").value)
-    const width = parseInt(document.getElementById("width").value)
-    const height = parseInt(document.getElementById("height").value)
-
-    const hex = document.getElementById("color").value
-    console.log(hex)
-    const rgb = webglUtils.hexToRgb(hex)
-    console.log(rgb)
-
-
-    if(center) {
-        x = center.position.x
-        y = center.position.y
-    }
-
-    const rectangle = {
-        type: RECTANGLE,
-        position: {
-            "x": x,
-            y: y
-        },
-        dimensions: {
-            width,
-            height
-        },
-        color: rgb
-    }
-
-    shapes.push(rectangle)
-    render()
-}
-
 let gl
 let attributeCoords
 let uniformColor
 let bufferCoords
 
-const doMouseDown = (event) => {
-    const boundingRectangle = canvas.getBoundingClientRect()
-    // console.log(boundingRectangle)
-    const x = event.clientX - boundingRectangle.left
-    const y = event.clientY - boundingRectangle.top
-    console.log(x, y)
-
-    const shape = document.querySelector("input[name='shape']:checked").value
-    console.log(shape)
-
-    const center = {
-        position: {x, y}
-    }
-
-    if(shape === "RECTANGLE") {
-        addRectangle(center)
-    } else if(shape === "TRIANGLE") {
-        addTriangle(center)
-    }
-
-}
-
 const init = () => {
-
     const canvas = document.querySelector("#canvas");
-    gl = canvas.getContext("webgl");
 
     canvas.addEventListener(
         "mousedown",
         doMouseDown,
         false);
+
+    gl = canvas.getContext("webgl");
 
     const program = webglUtils.createProgramFromScripts(gl, "#vertex-shader-2d", "#fragment-shader-2d");
     gl.useProgram(program);
@@ -194,7 +186,6 @@ const renderTriangle = (triangle) => {
 
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
-
 
 const renderRectangle = (rectangle) => {
     const x1 = rectangle.position.x
