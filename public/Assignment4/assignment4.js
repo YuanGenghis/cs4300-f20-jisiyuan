@@ -10,9 +10,9 @@ const doMouseDown = (event) => {
 }
 
 const RED_HEX = "#FF0000"
-const RED_RGB = webglUtils5.hexToRgb(RED_HEX)
+const RED_RGB = webglUtils6.hexToRgb(RED_HEX)
 const BLUE_HEX = "#0000FF"
-const BLUE_RGB = webglUtils5.hexToRgb(BLUE_HEX)
+const BLUE_RGB = webglUtils6.hexToRgb(BLUE_HEX)
 const RECTANGLE = "RECTANGLE"
 const TRIANGLE = "TRIANGLE"
 const STAR = "STAR"
@@ -96,7 +96,7 @@ let shapes = [
 
 const addShape = (translation, type) => {
     const colorHex = document.getElementById("color").value
-    const colorRgb = webglUtils5.hexToRgb(colorHex)
+    const colorRgb = webglUtils6.hexToRgb(colorHex)
     let tx = 0
     let ty = 0
     if (translation) {
@@ -134,7 +134,7 @@ const init = () => {
     gl = canvas.getContext("webgl");
 
 
-    const program = webglUtils5.createProgramFromScripts(gl, "#vertex-shader-2d", "#fragment-shader-2d");
+    const program = webglUtils6.createProgramFromScripts(gl, "#vertex-shader-2d", "#fragment-shader-2d");
     gl.useProgram(program);
 
     // get reference to GLSL attributes and uniforms
@@ -193,7 +193,7 @@ const updateRotation = (event, axis) => {
 
 const updateColor = (event) => {
     const value = event.target.value
-    const rgb = webglUtils5.hexToRgb(value)
+    const rgb = webglUtils6.hexToRgb(value)
     shapes[selectedShapeIndex].color = rgb
     render()
     // Use webglUtils5.hexToRgb to convert hex color to rgb
@@ -269,7 +269,7 @@ const selectShape = (selectedIndex) => {
     document.getElementById('sy').value = shapes[selectedIndex].scale.y
     document.getElementById('rz').value = shapes[selectedIndex].rotation.z
     // TODO: update the scale and rotation fields
-    const hexColor = webglUtils5.rgbToHex(shapes[selectedIndex].color)
+    const hexColor = webglUtils6.rgbToHex(shapes[selectedIndex].color)
     document.getElementById("color").value = hexColor
 }
 

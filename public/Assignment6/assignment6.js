@@ -27,78 +27,65 @@ const doMouseDown = (event) => {
 }
 
 
+
+const up = [0, 1, 0]
+let target = [0, 0, 0]
+let lookAt = true
+// declare up to be in +y direction
+// declare the origin as the target we'll look at
+// we'll toggle lookAt on and off
+
+
+
 const RED_HEX = "#FF0000"
 const RED_RGB = webglUtils6.hexToRgb(RED_HEX)
-const GREEN_HEX = "#00FF00"
-const GREEN_RGB = webglUtils6.hexToRgb(GREEN_HEX)
 const BLUE_HEX = "#0000FF"
 const BLUE_RGB = webglUtils6.hexToRgb(BLUE_HEX)
+const GREEN_HEX = "#00FF00"
+const GREEN_RGB = webglUtils6.hexToRgb(GREEN_HEX)
 const RECTANGLE = "RECTANGLE"
 const TRIANGLE = "TRIANGLE"
+const LETTER_F = "LETTER_F"
 const STAR = "STAR"
 const CIRCLE = "CIRCLE"
-
-
+const CUBE = "CUBE"
 const origin = {x: 0, y: 0, z: 0}
 const sizeOne = {width: 1, height: 1, depth: 1}
-const CUBE = "CUBE"
-// let shapes = [
-//     {
-//         type: RECTANGLE,
-//         position: origin,
-//         dimensions: sizeOne,
-//         color: BLUE_RGB,
-//         translation: {x: 200, y: 100, z: -20},
-//         rotation: {x:   0, y:  0, z:   0},
-//         scale: {x: 50, y: 50, z:  10}
-//     },
-//     {
-//         type: TRIANGLE,
-//         position: origin,
-//         dimensions: sizeOne,
-//         color: RED_RGB,
-//         translation: {x: 200, y:  200, z: -20},
-//         scale:       {x: 10, y: 10, z:  10},
-//         rotation:    {x:  0, y:  0, z: 180}
-//     },
-//     {
-//         type: CUBE,
-//         position: origin,
-//         dimensions: sizeOne,
-//         color: GREEN_RGB,
-//         translation: {x: 0, y: 0, z: 0},
-//         scale:       {x:   1, y:   1, z:   1},
-//         rotation:    {x:   0, y:  45, z:   0},
-//     }
-// ]
+
+let camera = {
+    translation: {x: 10, y: 10, z: 50},
+    rotation: {x: 0, y: 180, z: 0}
+}
+
+let lightSource = [0.4, 0.3, 0.5]
 
 let shapes = [
     {
-        type: RECTANGLE,
+        type: CUBE,
         position: origin,
         dimensions: sizeOne,
         color: BLUE_RGB,
-        translation: {x: -15, y:  0, z: -20},
-        scale:       {x:  10, y: 10, z:  10},
-        rotation:    {x:   0, y:  0, z:   0}
-    },
-    {
-        type: TRIANGLE,
-        position: origin,
-        dimensions: sizeOne,
-        color: RED_RGB,
-        translation: {x: 15, y:  0, z: -20},
-        scale:       {x: 10, y: 10, z:  10},
-        rotation:    {x:  0, y:  0, z: 180}
+        translation: {x:  0, y: 0, z: 0},
+        scale:       {x:   0.5, y:   0.5, z:   0.5},
+        rotation:    {x:   0, y:  0, z:   0},
     },
     {
         type: CUBE,
         position: origin,
         dimensions: sizeOne,
         color: GREEN_RGB,
-        translation: {x: -15, y: -15, z: -75},
-        scale:       {x:   1, y:   1, z:   1},
-        rotation:    {x:   0, y:  45, z:   0},
+        translation: {x: 20, y: 0, z: 0},
+        scale:       {x:   0.5, y:   0.5, z:   0.5},
+        rotation:    {x:   0, y:  0, z:   0},
+    },
+    {
+        type: CUBE,
+        position: origin,
+        dimensions: sizeOne,
+        color: RED_RGB,
+        translation:  {x: -20, y: 0, z: 0},
+        scale:       {x:   0.5, y:   0.5, z:   0.5},
+        rotation:     {x: 0, y: 0, z: 0}
     }
 ]
 
@@ -131,6 +118,12 @@ let attributeCoords
 let uniformMatrix
 let uniformColor
 let bufferCoords
+let fieldOfViewRadians = m6.degToRad(60)
+
+const updateFieldOfView = (event) => {
+    fieldOfViewRadians = m6.degToRad(event.target.value);
+    render();
+}
 
 const init = () => {
     const canvas = document.querySelector("#canvas");
@@ -155,12 +148,9 @@ const init = () => {
 
     // initialize coordinate buffer
     bufferCoords = gl.createBuffer();
-    // const uniformResolution = gl.getUniformLocation(program, "u_resolution");
     uniformMatrix = gl.getUniformLocation(program, "u_matrix");
 
 
-    // // configure canvas resolution
-    // gl.uniform2f(uniformResolution, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -181,13 +171,27 @@ const init = () => {
 
     document.getElementById("color").onchange = event => updateColor(event)
 
+    document.getElementById("lookAt").onchange = event => webglUtils6.toggleLookAt(event)
+    document.getElementById("ctx").onchange = event => webglUtils6.updateCameraTranslation(event, "x")
+    document.getElementById("cty").onchange = event => webglUtils6.updateCameraTranslation(event, "y")
+    document.getElementById("ctz").onchange = event => webglUtils6.updateCameraTranslation(event, "z")
+    document.getElementById("crx").onchange = event => webglUtils6.updateCameraRotation(event, "x")
+    document.getElementById("cry").onchange = event => webglUtils6.updateCameraRotation(event, "y")
+    document.getElementById("crz").onchange = event => webglUtils6.updateCameraRotation(event, "z")
+    document.getElementById("ltx").onchange = event => webglUtils6.updateLookAtTranslation(event, 0)
+    document.getElementById("lty").onchange = event => webglUtils6.updateLookAtTranslation(event, 1)
+    document.getElementById("ltz").onchange = event => webglUtils6.updateLookAtTranslation(event, 2)
+
+    document.getElementById("lookAt").checked = lookAt
+    document.getElementById("ctx").value = camera.translation.x
+    document.getElementById("cty").value = camera.translation.y
+    document.getElementById("ctz").value = camera.translation.z
+    document.getElementById("crx").value = camera.rotation.x
+    document.getElementById("cry").value = camera.rotation.y
+    document.getElementById("crz").value = camera.rotation.z
+
 
     selectShape(0)
-}
-
-const updateFieldOfView = (event) => {
-    fieldOfViewRadians = m4.degToRad(event.target.value);
-    render();
 }
 
 
@@ -206,8 +210,6 @@ const updateScale = (event, axis) => {
 }
 
 const updateRotation = (event, axis) => {
-    // const value = event.target.value
-    // const angleInDegrees = (360 - value) * Math.PI / 180;
     shapes[selectedShapeIndex].rotation[axis] = event.target.value
     render();
 }
@@ -217,19 +219,31 @@ const updateColor = (event) => {
     const rgb = webglUtils6.hexToRgb(value)
     shapes[selectedShapeIndex].color = rgb
     render()
-    // Use webglUtils5.hexToRgb to convert hex color to rgb
 }
 
-let fieldOfViewRadians = m4.degToRad(60)
-const computeModelViewMatrix = (canvas, shape, aspect, zNear, zFar) => {
-    let M = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar)
-    M = m4.translate(M, shape.translation.x, shape.translation.y, shape.translation.z)
-    M = m4.xRotate(M, m4.degToRad(shape.rotation.x))
-    M = m4.yRotate(M, m4.degToRad(shape.rotation.y))
-    M = m4.zRotate(M, m4.degToRad(shape.rotation.z))
-    M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z)
+// let fieldOfViewRadians = m6.degToRad(60)
+// const computeModelViewMatrix = (canvas, shape, aspect, zNear, zFar) => {
+//     let M = m6.perspective(fieldOfViewRadians, aspect, zNear, zFar)
+//     M = m6.translate(M, shape.translation.x, shape.translation.y, shape.translation.z)
+//     M = m6.xRotate(M, m6.degToRad(shape.rotation.x))
+//     M = m6.yRotate(M, m6.degToRad(shape.rotation.y))
+//     M = m6.zRotate(M, m6.degToRad(shape.rotation.z))
+//     M = m6.scale(M, shape.scale.x, shape.scale.y, shape.scale.z)
+//     return M
+// }
+
+const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
+    M = m6.translate(viewProjectionMatrix,
+                     shape.translation.x,
+                     shape.translation.y,
+                     shape.translation.z)
+    M = m6.xRotate(M, m6.degToRad(shape.rotation.x))
+    M = m6.yRotate(M, m6.degToRad(shape.rotation.y))
+    M = m6.zRotate(M, m6.degToRad(shape.rotation.z))
+    M = m6.scale(M, shape.scale.x, shape.scale.y, shape.scale.z)
     return M
 }
+
 
 
 const render = () => {
@@ -243,17 +257,53 @@ const render = () => {
         // each iteration to get the next position
         0);          // offset = 0; i.e., start at the beginning of the buffer
 
-    // gl.enable(gl.CULL_FACE);
-    // gl.enable(gl.DEPTH_TEST);
-
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 1;
     const zFar = 2000;
 
-    // gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
+    let viewProjectionMatrix
 
     const $shapeList = $("#object-list")
     $shapeList.empty()
+    let cameraMatrix = m6.identity();
+    if(lookAt) {
+        cameraMatrix = m6.translate(
+            cameraMatrix,
+            camera.translation.x,
+            camera.translation.y,
+            camera.translation.z)
+        const cameraPosition = [
+            cameraMatrix[12],
+            cameraMatrix[13],
+            cameraMatrix[14]]
+        cameraMatrix = m6.lookAt(
+            cameraPosition,
+            target,
+            up)
+        cameraMatrix = m6.inverse(cameraMatrix)
+    }  else {
+        cameraMatrix = m6.zRotate(
+            cameraMatrix,
+            m6.degToRad(camera.rotation.z));
+        cameraMatrix = m6.xRotate(
+            cameraMatrix,
+            m6.degToRad(camera.rotation.x));
+        cameraMatrix = m6.yRotate(
+            cameraMatrix,
+            m6.degToRad(camera.rotation.y));
+        cameraMatrix = m6.translate(
+            cameraMatrix,
+            camera.translation.x,
+            camera.translation.y,
+            camera.translation.z);
+    }
+    const projectionMatrix = m6.perspective(
+        fieldOfViewRadians, aspect, zNear, zFar)
+    viewProjectionMatrix = m6.multiply(
+        projectionMatrix, cameraMatrix)
+
+
+
     shapes.forEach((shape,index) => {
         const $li = $(`
         <li>
@@ -280,16 +330,11 @@ const render = () => {
                      shape.color.green,
                      shape.color.blue, 1);
 
-        // let matrix = m6.projection(gl.canvas.clientWidth, gl.canvas.clientHeight);
-        // matrix = m6.translate(matrix, shape.translation.x, shape.translation.y);
-        // matrix = m6.rotate(matrix, shape.rotation.z);
-        // matrix = m6.scale(matrix, shape.scale.x, shape.scale.y);
 
-        let M = computeModelViewMatrix(gl.canvas, shape, aspect, zNear, zFar)
+        // let M = computeModelViewMatrix(gl.canvas, shape, aspect, zNear, zFar)
+        let M = computeModelViewMatrix(
+            shape, viewProjectionMatrix)
         gl.uniformMatrix4fv(uniformMatrix, false, M)
-
-        // apply transformation matrix.
-        // gl.uniformMatrix3fv(uniformMatrix, false, matrix);
 
 
         if (shape.type === CUBE) {
@@ -320,7 +365,7 @@ const selectShape = (selectedIndex) => {
     document.getElementById("rx").value = shapes[selectedIndex].rotation.x
     document.getElementById("ry").value = shapes[selectedIndex].rotation.y
     document.getElementById('rz').value = shapes[selectedIndex].rotation.z
-    document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians)
+    document.getElementById("fv").value = m6.radToDeg(fieldOfViewRadians)
     // TODO: update the scale and rotation fields
     const hexColor = webglUtils6.rgbToHex(shapes[selectedIndex].color)
     document.getElementById("color").value = hexColor
