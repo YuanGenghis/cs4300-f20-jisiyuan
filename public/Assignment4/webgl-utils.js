@@ -16,7 +16,7 @@ const webglUtils = {
         return hex.length == 1 ? "0" + hex : hex;
     },
     // rgbToHex: (rgb) => {
-    //     return `#${webglUtils5.componentToHex(rgb.red * 256)}${webglUtils5.componentToHex(rgb.green * 256)}${webglUtils5.componentToHex(rgb.blue * 256)}`
+    //     return `#${webglUtils.componentToHex(rgb.red * 256)}${webglUtils.componentToHex(rgb.green * 256)}${webglUtils.componentToHex(rgb.blue * 256)}`
     // },
     rgbToHex: (rgb) => {
         const redHex = webglUtils.componentToHex(rgb.red * 256)

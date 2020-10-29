@@ -13,9 +13,9 @@ const doMouseDown = (event) => {
 }
 
 const RED_HEX = "#FF0000"
-const RED_RGB = webglUtils6.hexToRgb(RED_HEX)
+const RED_RGB = webglUtils7.hexToRgb(RED_HEX)
 const BLUE_HEX = "#0000FF"
-const BLUE_RGB = webglUtils6.hexToRgb(BLUE_HEX)
+const BLUE_RGB = webglUtils7.hexToRgb(BLUE_HEX)
 const RECTANGLE = "RECTANGLE"
 const TRIANGLE = "TRIANGLE"
 let shapes = [
@@ -59,7 +59,7 @@ const addRectangle = (rectangle) => {
     const width = parseInt(document.getElementById("width").value)
     const height = parseInt(document.getElementById("height").value)
     const colorHex = document.getElementById("color").value
-    const colorRgb = webglUtils6.hexToRgb(colorHex)
+    const colorRgb = webglUtils7.hexToRgb(colorHex)
 
     if (rectangle) {
         x = rectangle.position.x
@@ -87,7 +87,7 @@ const addTriangle = (center) => {
     let x = parseInt(document.getElementById("x").value)
     let y = parseInt(document.getElementById("y").value)
     const colorHex = document.getElementById("color").value
-    const colorRgb = webglUtils6.hexToRgb(colorHex)
+    const colorRgb = webglUtils7.hexToRgb(colorHex)
     const width = parseInt(document.getElementById("width").value)
     const height = parseInt(document.getElementById("height").value)
     if (center) {
@@ -119,7 +119,7 @@ const init = () => {
 
     gl = canvas.getContext("webgl");
 
-    const program = webglUtils6.createProgramFromScripts(gl, "#vertex-shader-2d", "#fragment-shader-2d");
+    const program = webglUtils7.createProgramFromScripts(gl, "#vertex-shader-2d", "#fragment-shader-2d");
     gl.useProgram(program);
 
     // get reference to GLSL attributes and uniforms
