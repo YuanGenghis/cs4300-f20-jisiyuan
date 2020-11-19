@@ -14,6 +14,11 @@ const drawScene = (gl, parameters, buffers, deltaTime) => {
         modelViewMatrix,
         squareRotation,
         [0, 0, 1]);
+    glMatrix.mat4.rotate(
+        modelViewMatrix,
+        modelViewMatrix,
+        squareRotation * .7,
+        [0, 1, 0]);
 
     squareRotation += deltaTime;
 
@@ -22,9 +27,12 @@ const drawScene = (gl, parameters, buffers, deltaTime) => {
     gl.useProgram(parameters.program);
     setUniforms(gl, parameters,
                 projectionMatrix, modelViewMatrix);
-    gl.drawArrays(gl.TRIANGLE_STRIP,
-                  0, // offset
-                  4); // vertexCount
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+    gl.drawElements(
+        gl.TRIANGLES,
+        36,
+        gl.UNSIGNED_SHORT,
+        0);
 }
 
 const clearScene = (gl) => {
@@ -54,7 +62,7 @@ const configurePositionBufferRead = (gl, buffers, parameters) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
     gl.vertexAttribPointer(
         parameters.attribLocations.vertexPosition,
-        2,
+        3,
             gl.FLOAT,
             false,
             0,
